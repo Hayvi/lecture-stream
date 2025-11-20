@@ -1,14 +1,16 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { ChapterCard } from "@/components/ChapterCard";
+import { SearchBar } from "@/components/SearchBar";
 import { chaptersData, Lecture } from "@/data/lecturesData";
 import { Button } from "@/components/ui/button";
-import { BookOpen, X } from "lucide-react";
+import { BookOpen, X, Search } from "lucide-react";
 
 const Index = () => {
   const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
   const [currentLectureIndex, setCurrentLectureIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSelectLecture = (lecture: Lecture) => {
     setSelectedLecture(lecture);
@@ -67,6 +69,41 @@ const Index = () => {
     return currentLectureIndex > 0 || currentChapterIndex > 0;
   };
 
+  // Filter chapters and lectures based on search query
+  const filteredChapters = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return chaptersData;
+    }
+
+    const query = searchQuery.toLowerCase();
+    
+    return chaptersData
+      .map((chapter) => {
+        // Check if chapter title matches
+        const chapterMatches = chapter.title.toLowerCase().includes(query);
+        
+        // Filter lectures that match the query
+        const matchingLectures = chapter.lectures.filter((lecture) =>
+          lecture.title.toLowerCase().includes(query)
+        );
+
+        // Include chapter if its title matches OR if it has matching lectures
+        if (chapterMatches || matchingLectures.length > 0) {
+          return {
+            ...chapter,
+            lectures: chapterMatches ? chapter.lectures : matchingLectures,
+          };
+        }
+        
+        return null;
+      })
+      .filter((chapter) => chapter !== null);
+  }, [searchQuery]);
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       {/* Header */}
@@ -80,9 +117,23 @@ const Index = () => {
       </header>
 
       <main className="container mx-auto px-4 py-6 pb-32">
+        {/* Search Bar */}
+        <div className="mb-8">
+          <SearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            onClear={handleClearSearch}
+          />
+          {searchQuery && (
+            <p className="text-center text-sm text-muted-foreground mt-3">
+              Found {filteredChapters.reduce((acc, ch) => acc + ch.lectures.length, 0)} lectures in {filteredChapters.length} chapters
+            </p>
+          )}
+        </div>
+
         {/* Chapters Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {chaptersData.map((chapter) => (
+          {filteredChapters.map((chapter) => (
             <ChapterCard
               key={chapter.id}
               chapterTitle={chapter.title}
@@ -93,7 +144,20 @@ const Index = () => {
         </div>
 
         {/* Empty State */}
-        {chaptersData.length === 0 && (
+        {filteredChapters.length === 0 && searchQuery && (
+          <div className="text-center py-12">
+            <Search className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+            <h2 className="text-xl font-semibold text-foreground mb-2">No results found</h2>
+            <p className="text-muted-foreground mb-4">
+              Try searching with different keywords
+            </p>
+            <Button variant="outline" onClick={handleClearSearch}>
+              Clear search
+            </Button>
+          </div>
+        )}
+        
+        {chaptersData.length === 0 && !searchQuery && (
           <div className="text-center py-12">
             <BookOpen className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
             <h2 className="text-xl font-semibold text-foreground mb-2">No lectures yet</h2>
