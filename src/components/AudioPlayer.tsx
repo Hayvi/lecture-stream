@@ -31,9 +31,21 @@ export const AudioPlayer = ({
     const audio = audioRef.current;
     if (!audio) return;
 
-    const updateTime = () => setCurrentTime(audio.currentTime);
+    // Restore saved time
+    const savedTime = localStorage.getItem(`lecture-progress-${audioSrc}`);
+    if (savedTime) {
+      const time = parseFloat(savedTime);
+      audio.currentTime = time;
+      setCurrentTime(time);
+    }
+
+    const updateTime = () => {
+      setCurrentTime(audio.currentTime);
+      // Save progress
+      localStorage.setItem(`lecture-progress-${audioSrc}`, audio.currentTime.toString());
+    };
     const updateDuration = () => setDuration(audio.duration);
-    
+
     audio.addEventListener("timeupdate", updateTime);
     audio.addEventListener("loadedmetadata", updateDuration);
     audio.addEventListener("ended", () => setIsPlaying(false));
@@ -81,7 +93,7 @@ export const AudioPlayer = ({
   return (
     <Card className="w-full p-6 bg-card/50 backdrop-blur-sm border-border/50">
       <audio ref={audioRef} src={audioSrc} />
-      
+
       <div className="space-y-4">
         <div className="text-center">
           <h3 className="text-lg font-semibold text-foreground truncate">{title}</h3>
@@ -113,7 +125,7 @@ export const AudioPlayer = ({
           >
             <SkipBack className="h-5 w-5" />
           </Button>
-          
+
           <Button
             variant="default"
             size="icon"
@@ -126,7 +138,7 @@ export const AudioPlayer = ({
               <Play className="h-6 w-6 ml-0.5" />
             )}
           </Button>
-          
+
           <Button
             variant="ghost"
             size="icon"

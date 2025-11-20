@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { ChapterCard } from "@/components/ChapterCard";
 import { SearchBar } from "@/components/SearchBar";
@@ -14,7 +14,8 @@ const Index = () => {
 
   const handleSelectLecture = (lecture: Lecture) => {
     setSelectedLecture(lecture);
-    
+    localStorage.setItem("lastPlayedLectureId", lecture.id);
+
     // Find the chapter and lecture indices
     chaptersData.forEach((chapter, chapterIdx) => {
       const lectureIdx = chapter.lectures.findIndex((l) => l.id === lecture.id);
@@ -24,6 +25,20 @@ const Index = () => {
       }
     });
   };
+
+  // Restore state on mount
+  useEffect(() => {
+    const lastPlayedId = localStorage.getItem("lastPlayedLectureId");
+    if (lastPlayedId) {
+      const foundLecture = chaptersData
+        .flatMap((c) => c.lectures)
+        .find((l) => l.id === lastPlayedId);
+
+      if (foundLecture) {
+        handleSelectLecture(foundLecture);
+      }
+    }
+  }, []);
 
   const handleNext = () => {
     const currentChapter = chaptersData[currentChapterIndex];
@@ -76,12 +91,12 @@ const Index = () => {
     }
 
     const query = searchQuery.toLowerCase();
-    
+
     return chaptersData
       .map((chapter) => {
         // Check if chapter title matches
         const chapterMatches = chapter.title.toLowerCase().includes(query);
-        
+
         // Filter lectures that match the query
         const matchingLectures = chapter.lectures.filter((lecture) =>
           lecture.title.toLowerCase().includes(query)
@@ -94,7 +109,7 @@ const Index = () => {
             lectures: chapterMatches ? chapter.lectures : matchingLectures,
           };
         }
-        
+
         return null;
       })
       .filter((chapter) => chapter !== null);
@@ -156,7 +171,7 @@ const Index = () => {
             </Button>
           </div>
         )}
-        
+
         {chaptersData.length === 0 && !searchQuery && (
           <div className="text-center py-12">
             <BookOpen className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
