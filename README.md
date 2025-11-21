@@ -1,73 +1,57 @@
-# Welcome to your Lovable project
+# Lecture Stream
 
-## Project info
+A **Vite + React + TypeScript** web app that streams classroom lecture recordings.  
+It displays a list of chapters (CDs) and their lectures, lets the user play, pause, and seek within each MP3 file, and remembers playback progress in `localStorage`.
 
-**URL**: https://lovable.dev/projects/fdca856b-6018-4b4d-b822-14464fc5d3ea
+---
 
-## How can I edit this code?
+## Tech Stack
+- **Vite** – fast dev server and build tool
+- **React** with **TypeScript** – UI components
+- **Tailwind CSS** & **shadcn‑ui** – modern, responsive styling
+- **Cloudflare Pages** – static hosting (the `public/audio/` folder is served directly)
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/fdca856b-6018-4b4d-b822-14464fc5d3ea) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
+## Getting Started (Local Development)
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# 1. Clone the repo
 git clone <YOUR_GIT_URL>
+cd lecture-stream
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
+# 2. Install dependencies
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 3. Run the dev server
 npm run dev
 ```
+Open <http://localhost:5173> – the app hot‑reloads as you edit files.
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Adding New Lectures
+1. **Create a folder** under `public/audio/` for the new chapter (e.g. `chapter4`).
+2. **Upload your MP3 files** into that folder.
+3. **Edit `src/data/lecturesData.ts`** – add a new `Chapter` object with the correct `audioSrc` paths.  The file already contains a helper comment showing the required shape.
+4. **Commit & push** – Cloudflare Pages will automatically publish the new files.
 
-**Use GitHub Codespaces**
+> **Note:** The UI now **wraps** long lecture titles on mobile (the `<p>` element uses `whitespace‑normal break‑words`). This lets you keep the original, descriptive filenames without renaming them, while still being readable on small screens.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## Mobile‑Friendly Lecture List
+- The list shows the **full filename** (minus the `.mp3` extension).
+- Long titles automatically wrap onto multiple lines, so you can scroll vertically without truncation.
+- If you later decide you want a more compact view (e.g., accordion, pagination, or virtualized list), the code is ready to be extended – see `src/components/ChapterCard.tsx` for the styling hook.
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Deploying to Cloudflare Pages
+1. Push to the `main` branch.
+2. In the Cloudflare dashboard, link the repo and enable automatic builds.
+3. The build runs `npm run build` and publishes the `dist/` folder.
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/fdca856b-6018-4b4d-b822-14464fc5d3ea) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## License
+MIT © 2025 Supa
