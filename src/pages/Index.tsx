@@ -124,8 +124,12 @@ const Index = () => {
       {/* Header */}
       <header className="border-b border-border/50 bg-background/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-2">
-            <BookOpen className="h-6 w-6 text-primary" />
+          <div className="flex items-center gap-3">
+            <img
+              src="/icon.jpg"
+              alt="Logo"
+              className="h-10 w-10 rounded-full object-cover border border-border/50 shadow-sm"
+            />
             <h1 className="text-2xl font-bold text-foreground">European school hören</h1>
           </div>
         </div>
