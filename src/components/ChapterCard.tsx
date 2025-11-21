@@ -41,7 +41,7 @@ export const ChapterCard = ({
                 {index + 1}.
               </span>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-foreground truncate">{lecture.title}</p>
+                <p className="font-medium text-foreground whitespace-normal break-words text-sm leading-tight">{lecture.title}</p>
                 {lecture.duration && (
                   <p className="text-sm text-muted-foreground">{lecture.duration}</p>
                 )}
