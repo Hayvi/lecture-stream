@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Music, Download } from "lucide-react";
+import { downloadAudio } from "@/lib/download";
 
 interface Lecture {
   id: string;
@@ -54,12 +55,7 @@ export const ChapterCard = ({
               className="h-10 w-10 shrink-0"
               onClick={(e) => {
                 e.stopPropagation();
-                const link = document.createElement("a");
-                link.href = lecture.audioSrc;
-                link.download = lecture.title + ".mp3";
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                downloadAudio(lecture.audioSrc, lecture.title);
               }}
               title="Download MP3"
             >

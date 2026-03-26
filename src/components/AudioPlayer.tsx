@@ -3,6 +3,7 @@ import { Play, Pause, SkipBack, SkipForward, Volume2, Download } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card } from "@/components/ui/card";
+import { downloadAudio } from "@/lib/download";
 
 interface AudioPlayerProps {
   title: string;
@@ -101,14 +102,7 @@ export const AudioPlayer = ({
             variant="ghost"
             size="icon"
             className="h-8 w-8 shrink-0"
-            onClick={() => {
-              const link = document.createElement("a");
-              link.href = audioSrc;
-              link.download = title + ".mp3";
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-            }}
+            onClick={() => downloadAudio(audioSrc, title)}
             title="Download MP3"
           >
             <Download className="h-4 w-4" />
