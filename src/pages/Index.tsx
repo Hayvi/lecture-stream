@@ -4,10 +4,12 @@ import { ChapterCard } from "@/components/ChapterCard";
 import { SearchBar } from "@/components/SearchBar";
 import { chaptersData, Lecture } from "@/data/lecturesData";
 import { Button } from "@/components/ui/button";
-import { BookOpen, X, Search } from "lucide-react";
+import { BookOpen, X, Search, ArrowLeft, Folder, Music } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 const Index = () => {
   const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
+  const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
   const [currentLectureIndex, setCurrentLectureIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -150,17 +152,74 @@ const Index = () => {
           )}
         </div>
 
-        {/* Chapters Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredChapters.map((chapter) => (
-            <ChapterCard
-              key={chapter.id}
-              chapterTitle={chapter.title}
-              lectures={chapter.lectures}
-              onSelectLecture={handleSelectLecture}
-            />
-          ))}
-        </div>
+        {/* Content Area */}
+        {searchQuery ? (
+          /* Search Results */
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredChapters.map((chapter) => (
+              <ChapterCard
+                key={chapter.id}
+                chapterTitle={chapter.title}
+                lectures={chapter.lectures}
+                onSelectLecture={handleSelectLecture}
+              />
+            ))}
+          </div>
+        ) : selectedChapterId ? (
+          /* Single Chapter View */
+          <div className="space-y-6">
+            <Button 
+              variant="ghost" 
+              className="gap-2 -ml-2 text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => setSelectedChapterId(null)}
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Categories
+            </Button>
+            
+            <div className="max-w-4xl mx-auto">
+              {chaptersData
+                .filter(ch => ch.id === selectedChapterId)
+                .map((chapter) => (
+                  <ChapterCard
+                    key={chapter.id}
+                    chapterTitle={chapter.title}
+                    lectures={chapter.lectures}
+                    onSelectLecture={handleSelectLecture}
+                  />
+                ))}
+            </div>
+          </div>
+        ) : (
+          /* Category Selection Grid */
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {chaptersData.map((chapter) => (
+              <Card 
+                key={chapter.id}
+                className="group cursor-pointer border-border/50 bg-card/30 backdrop-blur-sm hover:bg-card/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                onClick={() => setSelectedChapterId(chapter.id)}
+              >
+                <CardContent className="p-8 flex flex-col items-center text-center space-y-4">
+                  <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    {chapter.id === 'chapter-4' ? (
+                      <Music className="h-8 w-8 text-primary" />
+                    ) : (
+                      <Folder className="h-8 w-8 text-primary" />
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors leading-tight">
+                      {chapter.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {chapter.lectures.length} Tracks
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {/* Empty State */}
         {filteredChapters.length === 0 && searchQuery && (
